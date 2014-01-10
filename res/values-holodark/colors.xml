@@ -49,9 +49,5 @@
 
     <!-- Button background -->
     <color name="button_background">#000000</color>
-	
-	<!-- Colors from card_call_incoming in layout -->
-    <color name="card_call_incoming_contact_name">#FFFFFFFF</color>
-	<color name="card_call_incoming_separator">#FF555555</color>
-	<color name="card_call_incoming_answer_reject">#FFAAAAAA</color>
+
 </resources>
