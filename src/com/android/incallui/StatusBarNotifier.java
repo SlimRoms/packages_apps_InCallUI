@@ -354,6 +354,10 @@ public class StatusBarNotifier implements InCallPresenter.InCallStateListener {
         if (state == Call.State.INCOMING) {
             addAnswerAction(builder);
             addDismissAction(builder);
+            if (!allowFullScreenIntent || mIsCallUiInBackground) {
+                // Call UI not active - set statusbar text
+                builder.setTicker(contentTitle);
+            }
         }
 
         /*
