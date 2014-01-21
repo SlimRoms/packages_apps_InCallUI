@@ -37,9 +37,13 @@ import android.telecom.VideoProfile;
 import android.telephony.PhoneNumberUtils;
 import android.text.format.DateUtils;
 import android.text.TextUtils;
+import android.view.ContextThemeWrapper;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnLayoutChangeListener;
 import android.view.ViewAnimationUtils;
 import android.view.ViewGroup;
@@ -51,9 +55,11 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import com.android.contacts.common.widget.FloatingActionButtonController;
+import com.android.internal.telephony.util.BlacklistUtils;
 import com.android.phone.common.animation.AnimUtils;
 
 import java.util.List;
@@ -84,6 +90,8 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
     private View mCallNumberAndLabel;
     private ImageView mPhoto;
     private TextView mElapsedTime;
+    private ImageButton mMoreMenuButton;
+    private MorePopupMenu mMoreMenu;
 
     // Container view that houses the entire primary call card, including the call buttons
     private View mPrimaryCallCardContainer;
@@ -212,6 +220,20 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         mCallButtonsContainer = view.findViewById(R.id.callButtonFragment);
         mInCallMessageLabel = (TextView) view.findViewById(R.id.connectionServiceMessage);
         mProgressSpinner = view.findViewById(R.id.progressSpinner);
+
+        mMoreMenuButton = (ImageButton) view.findViewById(R.id.moreMenuButton);
+        final ContextThemeWrapper contextWrapper = new ContextThemeWrapper(getActivity(),
+                R.style.InCallPopupMenuStyle);
+        mMoreMenu = new MorePopupMenu(contextWrapper, mMoreMenuButton /* anchorView */);
+        mMoreMenu.getMenuInflater().inflate(R.menu.incall_more_menu, mMoreMenu.getMenu());
+        mMoreMenuButton.setOnTouchListener(mMoreMenu.getDragToOpenListener());
+        mMoreMenuButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mMoreMenu.show();
+            }
+        });
+
 
         mFloatingActionButtonContainer = view.findViewById(
                 R.id.floating_end_call_action_button_container);
@@ -511,6 +533,8 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         boolean isGatewayCall = !TextUtils.isEmpty(gatewayNumber);
         CharSequence callStateLabel = getCallStateLabelFromState(state, videoState,
                 sessionModificationState, disconnectCause, connectionLabel, isGatewayCall);
+
+        updateMoreMenuByCall(state);
 
         Log.v(this, "setCallState " + callStateLabel);
         Log.v(this, "DisconnectCause " + disconnectCause.toString());
@@ -1057,6 +1081,41 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         }
     }
 
+    private void updateMoreMenuByCall(int state) {
+        if (mMoreMenuButton == null) {
+            return;
+        }
+
+        final Menu menu = mMoreMenu.getMenu();
+        final MenuItem startRecord = menu.findItem(R.id.menu_start_record);
+        final MenuItem stopRecord = menu.findItem(R.id.menu_stop_record);
+        final MenuItem addToBlacklist = menu.findItem(R.id.menu_add_to_blacklist);
+
+        boolean isRecording = ((InCallActivity)getActivity()).isCallRecording();
+        boolean isRecordEnabled = ((InCallActivity)getActivity()).isCallRecorderEnabled();
+
+        boolean startEnabled = !isRecording && isRecordEnabled && state == Call.State.ACTIVE;
+        boolean stopEnabled = isRecording && isRecordEnabled && state == Call.State.ACTIVE;
+
+        boolean blacklistVisible = BlacklistUtils.isBlacklistEnabled(getActivity())
+                && Call.State.isConnectingOrConnected(state);
+
+        startRecord.setVisible(startEnabled);
+        startRecord.setEnabled(startEnabled);
+
+        stopRecord.setVisible(stopEnabled);
+        stopRecord.setEnabled(stopEnabled);
+
+        addToBlacklist.setVisible(blacklistVisible);
+        addToBlacklist.setEnabled(blacklistVisible);
+
+        if (mMoreMenu.getMenu().hasVisibleItems()) {
+            mMoreMenuButton.setVisibility(View.VISIBLE);
+        } else {
+            mMoreMenuButton.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
@@ -1116,4 +1175,31 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
             }
         }
     };
+
+    private class MorePopupMenu extends PopupMenu implements PopupMenu.OnMenuItemClickListener {
+        public MorePopupMenu(Context context, View anchor) {
+            super(context, anchor);
+            setOnMenuItemClickListener(this);
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            switch(item.getItemId()) {
+                case R.id.menu_start_record:
+                    ((InCallActivity)getActivity()).startInCallRecorder();
+
+                    return true;
+
+                case R.id.menu_stop_record:
+                    ((InCallActivity)getActivity()).stopInCallRecorder();
+
+                    return true;
+
+                case R.id.menu_add_to_blacklist:
+                    getPresenter().blacklistClicked(getActivity());
+                    return true;
+            }
+            return true;
+        }
+    }
 }

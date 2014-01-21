@@ -21,9 +21,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.graphics.drawable.LayerDrawable;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
 import android.telecom.AudioState;
 import android.telecom.TelecomManager;
 import android.telecom.VideoProfile;
@@ -67,7 +65,6 @@ public class CallButtonFragment
     private ImageButton mOverflowButton;
     private ImageButton mAddParticipantButton;
     private ImageButton mManageVideoCallConferenceButton;
-    private ImageButton mMoreMenuButton;
 
     private PopupMenu mAudioModePopup;
     private boolean mAudioModePopupVisible;
@@ -132,22 +129,6 @@ public class CallButtonFragment
         mManageVideoCallConferenceButton = (ImageButton) parent.findViewById(
             R.id.manageVideoCallConferenceButton);
         mManageVideoCallConferenceButton.setOnClickListener(this);
-
-        mMoreMenuButton = (ImageButton) parent.findViewById(R.id.moreMenuButton);
-        if (mMoreMenuButton != null) {
-            boolean canRecordCalls = ((InCallActivity)getActivity()).isCallRecorderEnabled();
-            if (canRecordCalls) {
-                mMoreMenuButton.setOnClickListener(this);
-                mMoreMenu = new MorePopupMenu(parent.getContext(), mMoreMenuButton);
-
-                mMoreMenu.inflate(R.menu.incall_more_menu);
-                mMoreMenu.setOnMenuItemClickListener(this);
-
-                mMoreMenuButton.setOnTouchListener(mMoreMenu.getDragToOpenListener());
-            } else {
-                mMoreMenuButton.setVisibility(View.GONE);
-            }
-        }
 
         return parent;
     }
@@ -227,9 +208,6 @@ public class CallButtonFragment
             case R.id.manageVideoCallConferenceButton:
                 onManageVideoCallConferenceClicked();
                 break;
-            case R.id.moreMenuButton:
-                mMoreMenu.show();
-                break;
             default:
                 Log.wtf(this, "onClick: unexpected");
                 break;
@@ -258,7 +236,6 @@ public class CallButtonFragment
         mOverflowButton.setEnabled(isEnabled);
         mAddParticipantButton.setEnabled(isEnabled);
         mManageVideoCallConferenceButton.setEnabled(isEnabled);
-        mMoreMenuButton.setEnabled(isEnabled);
     }
 
     @Override
@@ -376,14 +353,6 @@ public class CallButtonFragment
         CallButtonPresenter.CallButtonUi ui = getUi();
         if (ui == null) {
             Log.e(this, "Cannot display ModifyCallOptions as ui is null");
-            return;
-        }
-
-        Context context = getContext();
-        if (isTtyModeEnabled()) {
-            Toast.makeText(context, context.getResources().getString(
-                    R.string.video_call_not_allowed_if_tty_enabled),
-                    Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -574,15 +543,7 @@ public class CallButtonFragment
                 mode = AudioState.ROUTE_BLUETOOTH;
                 break;
 
-            case R.id.menu_start_record:
-                ((InCallActivity)getActivity()).startInCallRecorder();
 
-                return true;
-
-            case R.id.menu_stop_record:
-                ((InCallActivity)getActivity()).stopInCallRecorder();
-
-                return true;
 
             default:
                 Log.e(this, "onMenuItemClick:  unexpected View ID " + item.getItemId()
@@ -834,40 +795,6 @@ public class CallButtonFragment
             e.setPackageName(context.getPackageName());
             e.getText().add(context.getResources().getString(stringId));
             manager.sendAccessibilityEvent(e);
-        }
-    }
-
-    private boolean isTtyModeEnabled() {
-        return (android.provider.Settings.Secure.getInt(
-                getContext().getContentResolver(),
-                android.provider.Settings.Secure.PREFERRED_TTY_MODE,
-                TelecomManager.TTY_MODE_OFF) != TelecomManager.TTY_MODE_OFF);
-    }
-
-    private class MorePopupMenu extends PopupMenu {
-        public MorePopupMenu(Context context, View anchor) {
-            super(context, anchor);
-        }
-
-        @Override
-        public void show() {
-            final Menu menu = getMenu();
-            final MenuItem startRecord = menu.findItem(R.id.menu_start_record);
-            final MenuItem stopRecord = menu.findItem(R.id.menu_stop_record);
-
-            boolean isRecording = ((InCallActivity)getActivity()).isCallRecording();
-            boolean isRecordEnabled = ((InCallActivity)getActivity()).isCallRecorderEnabled();
-
-            boolean startEnabled = !isRecording && isRecordEnabled;
-            boolean stopEnabled = isRecording && isRecordEnabled;
-
-            startRecord.setVisible(startEnabled);
-            startRecord.setEnabled(startEnabled);
-
-            stopRecord.setVisible(stopEnabled);
-            stopRecord.setEnabled(stopEnabled);
-
-            super.show();
         }
     }
 }

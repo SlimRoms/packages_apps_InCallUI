@@ -167,18 +167,12 @@
             android:contentDescription="@string/onscreenOverflowText"
             android:visibility="gone" />
 
-        <!-- "Manage conference button (Video Call) " -->
+       <!-- "Manage conference button (Video Call) " -->
         <ImageButton android:id="@+id/manageVideoCallConferenceButton"
             style="@style/InCallButton"
             android:background="@drawable/ic_group_white_24dp"
             android:contentDescription="@string/onscreenManageConferenceText"
             android:visibility="gone" />
-
-        <ImageButton
-            android:id="@+id/moreMenuButton"
-            style="@style/InCallButton"
-            android:src="@drawable/ic_menu_overflow_lt"
-            android:contentDescription="@string/onscreenMoreMenuText" />
 
     </LinearLayout>
 
