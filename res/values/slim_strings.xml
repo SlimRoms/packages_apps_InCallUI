@@ -10,9 +10,15 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-    <!-- Incall Overflow Menu -->
+    <!-- Text for the onscreen "Blacklist" button -->
+    <string name="onscreenBlacklistText">Blacklist</string>
+
+    <!-- Blacklist confirmation dialog -->
+    <string name="blacklist_dialog_title">Add to blacklist</string>
+    <string name="blacklist_dialog_message">Future calls from <xliff:g id="number">%s</xliff:g> will be blocked</string>
+
+        <!-- Incall Overflow Menu -->
     <string name="onscreenMoreMenuText">More menu</string>
     <string name="menu_start_record">Record call</string>
     <string name="menu_stop_record">Stop recording</string>
