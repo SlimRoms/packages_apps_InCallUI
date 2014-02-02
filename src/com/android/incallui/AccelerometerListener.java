@@ -23,6 +23,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ServiceManager;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -71,7 +72,6 @@ public final class AccelerometerListener {
     private static final int RINGING_NO_ACTION = 2;
 
     private Context mContext;
-    private ITelephony mTelephonyService;
 
     public interface OrientationListener {
         public void orientationChanged(int orientation);
@@ -90,7 +90,6 @@ public final class AccelerometerListener {
     public AccelerometerListener(Context context) {
         mContext = context;
         mSensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
-        mTelephonyService = getTeleService();
     }
 
     public void enable(boolean enable) {
@@ -259,12 +258,14 @@ public final class AccelerometerListener {
     public void handleAction() {
         switch(getFlipAction()) {
             case MUTE_RINGER:
-                if (mTelephonyService!= null) {
-                    try{
-                        mTelephonyService.silenceRinger();
-                    }catch(android.os.RemoteException e){
-                        Log.d(TAG, e.toString());
+                try {
+                    ITelephony phone =
+                            ITelephony.Stub.asInterface(ServiceManager.checkService("phone"));
+                    if (phone != null) {
+                        phone.silenceRinger();
                     }
+                } catch (android.os.RemoteException e) {
+                    Log.d(TAG, e.toString());
                 }
                 break;
             case DISMISS_CALL:
@@ -281,23 +282,6 @@ public final class AccelerometerListener {
     private int getFlipAction(){
         return Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.CALL_FLIP_ACTION_KEY, RINGING_NO_ACTION);
-    }
-
-    private ITelephony getTeleService() {
-        TelephonyManager tm =
-                (TelephonyManager) mContext.getSystemService(Context.TELEPHONY_SERVICE);
-        try {
-            // Java reflection to gain access to TelephonyManager's
-            // ITelephony getter
-            Class c = Class.forName(tm.getClass().getName());
-            Method m = c.getDeclaredMethod("getITelephony");
-            m.setAccessible(true);
-            return (ITelephony) m.invoke(tm);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Log.e(TAG, "- Could not connect to telephony subsystem");
-            return null;
-        }
     }
 
     Handler mHandler = new Handler() {
