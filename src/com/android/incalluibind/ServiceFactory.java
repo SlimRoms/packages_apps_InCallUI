@@ -19,7 +19,6 @@ package com.android.incalluibind;
 import android.content.Context;
 
 import com.android.incallui.service.PhoneNumberService;
-import com.android.incallui.service.PhoneNumberServiceImpl;
 
 /**
  * Default static binder for services.
@@ -27,6 +26,7 @@ import com.android.incallui.service.PhoneNumberServiceImpl;
 public class ServiceFactory {
 
     public static PhoneNumberService newPhoneNumberService(Context context) {
-        return (PhoneNumberService) new PhoneNumberServiceImpl(context);
+        // no phone number service.
+        return null;
     }
 }
