@@ -174,7 +174,8 @@ public class ContactInfoCache implements ContactsAsyncHelper.OnImageLoadComplete
             if (!callerInfo.contactExists && cacheEntry.name == null) {
                 Log.d(TAG, "Contact lookup. Local contacts miss, checking remote");
                 if (mPhoneNumberService != null) {
-                    final PhoneNumberServiceListener listener = new PhoneNumberServiceListener(callId);
+                    final PhoneNumberServiceListener listener =
+                            new PhoneNumberServiceListener(callId);
                     mPhoneNumberService.getPhoneNumberInfo(cacheEntry.number, listener, listener,
                             isIncoming);
                 } else {
