@@ -23,4 +23,10 @@
 
     <!-- In-call screen: status label for a call that is held remotely  -->
     <string name="card_title_waiting_call">Waiting call</string>
+
+    <!-- Description label for answering a call on speakerphone -->
+    <string name="description_target_speaker">Answer on Speakerphone</string>
+
+    <!-- Description of the down direction in which one can to slide the handle in the phone answer screen. [CHAR LIMIT=NONE] -->
+    <string name="description_direction_down">Slide down for <xliff:g id="target_description" example="Unlock">%s</xliff:g>.</string>
 </resources>

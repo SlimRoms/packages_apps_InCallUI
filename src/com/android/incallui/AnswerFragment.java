@@ -32,6 +32,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.android.services.telephony.common.AudioMode;
 import com.google.common.base.Preconditions;
 
 import java.util.ArrayList;
@@ -110,25 +111,48 @@ public class AnswerFragment extends BaseFragment<AnswerPresenter, AnswerPresente
 
     @Override
     public void showTextButton(boolean show) {
+        final boolean speakerCapable = (AudioMode.BLUETOOTH
+                & AudioModeProvider.getInstance().getSupportedModes()) == 0;
+
         final int targetResourceId = show
-                ? R.array.incoming_call_widget_3way_targets
+                ?  speakerCapable ? R.array.incoming_call_widget_4way_targets
+                : R.array.incoming_call_widget_3way_nospk_targets
+                : speakerCapable ? R.array.incoming_call_widget_3way_targets
                 : R.array.incoming_call_widget_2way_targets;
 
         if (targetResourceId != mGlowpad.getTargetResourceId()) {
             if (show) {
-                // Answer, Decline, and Respond via SMS.
-                mGlowpad.setTargetResources(targetResourceId);
-                mGlowpad.setTargetDescriptionsResourceId(
-                        R.array.incoming_call_widget_3way_target_descriptions);
-                mGlowpad.setDirectionDescriptionsResourceId(
-                        R.array.incoming_call_widget_3way_direction_descriptions);
+                if (speakerCapable) {
+                    // Answer, Decline, Respond via SMS, and Answer via speaker.
+                    mGlowpad.setTargetResources(targetResourceId);
+                    mGlowpad.setTargetDescriptionsResourceId(
+                            R.array.incoming_call_widget_4way_target_descriptions);
+                    mGlowpad.setDirectionDescriptionsResourceId(
+                            R.array.incoming_call_widget_4way_direction_descriptions);
+                } else {
+                    // Answer, Decline, and Respond via SMS.
+                    mGlowpad.setTargetResources(targetResourceId);
+                    mGlowpad.setTargetDescriptionsResourceId(
+                            R.array.incoming_call_widget_3way_nospk_target_descriptions);
+                    mGlowpad.setDirectionDescriptionsResourceId(
+                            R.array.incoming_call_widget_3way_nospk_direction_descriptions);
+                }
             } else {
-                // Answer or Decline.
-                mGlowpad.setTargetResources(targetResourceId);
-                mGlowpad.setTargetDescriptionsResourceId(
-                        R.array.incoming_call_widget_2way_target_descriptions);
-                mGlowpad.setDirectionDescriptionsResourceId(
-                        R.array.incoming_call_widget_2way_direction_descriptions);
+                if (speakerCapable) {
+                    // Answer, Decline, and Answer via speaker.
+                    mGlowpad.setTargetResources(targetResourceId);
+                    mGlowpad.setTargetDescriptionsResourceId(
+                            R.array.incoming_call_widget_3way_target_descriptions);
+                    mGlowpad.setDirectionDescriptionsResourceId(
+                            R.array.incoming_call_widget_3way_direction_descriptions);
+                } else {
+                    // Answer or Decline.
+                    mGlowpad.setTargetResources(targetResourceId);
+                    mGlowpad.setTargetDescriptionsResourceId(
+                            R.array.incoming_call_widget_2way_target_descriptions);
+                    mGlowpad.setDirectionDescriptionsResourceId(
+                            R.array.incoming_call_widget_2way_direction_descriptions);
+                }
             }
 
             mGlowpad.reset(false);
