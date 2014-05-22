@@ -219,7 +219,7 @@ public class CallButtonPresenter extends Presenter<CallButtonPresenter.CallButto
         final boolean isEnabled = state.isConnectingOrConnected() &&
                 !state.isIncoming() && call != null;
 
-        ui.setEnabled(isEnabled);
+        ui.setEnabled(isEnabled, !state.isIncoming());
 
         Log.d(this, "Updating call UI for call: ", call);
 
@@ -330,7 +330,7 @@ public class CallButtonPresenter extends Presenter<CallButtonPresenter.CallButto
     }
 
     public interface CallButtonUi extends Ui {
-        void setEnabled(boolean on);
+        void setEnabled(boolean on, boolean visible);
         void setMute(boolean on);
         void enableMute(boolean enabled);
         void setHold(boolean on);

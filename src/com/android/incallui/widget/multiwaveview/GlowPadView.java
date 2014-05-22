@@ -32,6 +32,7 @@ import android.graphics.Canvas;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -235,6 +236,13 @@ public class GlowPadView extends View {
         mGlowRadius = a.getDimension(R.styleable.GlowPadView_glowRadius, 0.0f);
 
         TypedValue outValue = new TypedValue();
+
+        final boolean transparent = Settings.System.getInt(
+                context.getContentResolver(),
+                Settings.System.INCALL_GLOWPAD_TRANSPARENCY, 0) == 1;
+        if (transparent) {
+            this.setBackgroundResource(R.color.transparent_glowpad_background);
+        }
 
         // Read array of target drawables
         if (a.getValue(R.styleable.GlowPadView_targetDrawables, outValue)) {
