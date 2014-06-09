@@ -138,7 +138,7 @@
     </style>
 
     <style name="InCallDialpadKeyNumberStyle">
-        <item name="android:textColor">@color/actionbar_background_color</item>
+        <item name="android:textColor">@color/dialpad_digits_text_color</item>
         <item name="android:textSize">@dimen/dialpad_key_numbers_size</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:layout_width">@dimen/dialpad_key_numbers_width</item>
