@@ -33,7 +33,7 @@
               android:id="@+id/bottomButtons"
               android:orientation="vertical"
               android:layout_width="match_parent"
-              android:background="#0000ff"
+              android:background="#0c0c0c"
               android:layout_margin="0dp"
               android:padding="0dp"
               android:layout_height="wrap_content"
