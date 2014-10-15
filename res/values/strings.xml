@@ -570,6 +570,11 @@
         <item>never</item>
     </string-array>
 
+    <string name="onscreenMoreMenuText">More menu</string>
+    <string name="menu_start_record">Record call</string>
+    <string name="menu_stop_record">Stop recording</string>
+    <string name="recording_time_text">Recording</string>
+
     <!-- Setting option name to pick ringtone (a list dialog comes up). [CHAR LIMIT=30] -->
     <string name="ringtone_title" msgid="5379026328015343686">Phone ringtone</string>
 
