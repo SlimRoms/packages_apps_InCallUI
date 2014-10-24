@@ -52,7 +52,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-
+import com.android.contacts.common.util.MaterialColorMapUtils.MaterialPalette;
 import com.android.contacts.common.widget.FloatingActionButtonController;
 import com.android.phone.common.animation.AnimUtils;
 
@@ -130,6 +130,8 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
     private static final int MESSAGE_TIMER = 1;
 
     private InCallActivity mInCallActivity;
+
+    private MaterialPalette mCurrentThemeColors;
 
     @Override
     CallCardPresenter.CallCardUi getUi() {
@@ -815,6 +817,21 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
     @Override
     public boolean isManageConferenceVisible() {
         return mManageConferenceCallButton.getVisibility() == View.VISIBLE;
+
+	/**
+     * Get the overall InCallUI background colors and apply to call card.
+     */
+    public void updateColors() {
+        MaterialPalette themeColors = InCallPresenter.getInstance().getThemeColors();
+
+        if (mCurrentThemeColors != null && mCurrentThemeColors.equals(themeColors)) {
+            return;
+        }
+
+        mPrimaryCallCardContainer.setBackgroundColor(themeColors.mPrimaryColor);
+        mCallButtonsContainer.setBackgroundColor(themeColors.mPrimaryColor);
+
+        mCurrentThemeColors = themeColors;
     }
 
     private void dispatchPopulateAccessibilityEvent(AccessibilityEvent event, View view) {
@@ -828,9 +845,8 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
         }
     }
 
-    public void animateForNewOutgoingCall(Point touchPoint) {
+    public void animateForNewOutgoingCall(final Point touchPoint) {
         final ViewGroup parent = (ViewGroup) mPrimaryCallCardContainer.getParent();
-        final Point startPoint = touchPoint;
 
         final ViewTreeObserver observer = getView().getViewTreeObserver();
 
@@ -861,7 +877,7 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
                 mCallTypeLabel.setAlpha(0);
                 mCallNumberAndLabel.setAlpha(0);
 
-                final Animator revealAnimator = getRevealAnimator(startPoint);
+                final Animator revealAnimator = getRevealAnimator(touchPoint);
                 final Animator shrinkAnimator =
                         getShrinkAnimator(parent.getHeight(), originalHeight);
 
@@ -929,6 +945,8 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
                 updateFabPosition();
             }
         });
+
+        updateColors();
     }
 
     /**
