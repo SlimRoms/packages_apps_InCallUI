@@ -16,7 +16,7 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="incall_call_type_label_forwarded">Hívásátirányítás</string>
-  <string name="card_title_dialing_waiting">Tárcsázás (várakozás\u2026)</string>
-  <string name="card_title_waiting_call">Hívás várakoztatás</string>
+  <string name="incall_call_type_label_forwarded">Weitergeleiteter Anruf</string>
+  <string name="card_title_waiting_call">Wartender Anruf</string>
+  <string name="description_direction_down">Zum <xliff:g id="target_description" example="Entsperren"> %s </xliff:g> nach unten wischen.</string>
 </resources>
