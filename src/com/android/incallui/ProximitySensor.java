@@ -53,6 +53,7 @@ public class ProximitySensor implements AccelerometerListener.OrientationListene
     private int mOrientation = AccelerometerListener.ORIENTATION_UNKNOWN;
     private boolean mUiShowing = false;
     private boolean mIsPhoneOffhook = false;
+    private boolean mIsPhoneOutgoing = false;
     private boolean mProximitySpeaker = false;
     private boolean mDialpadVisible;
 
@@ -115,13 +116,19 @@ public class ProximitySensor implements AccelerometerListener.OrientationListene
         // sensor during incoming call screen
         boolean isOffhook = (InCallState.INCALL == state
                 || InCallState.OUTGOING == state);
+        boolean isOutgoing = (InCallState.OUTGOING == state);
 
         if (isOffhook != mIsPhoneOffhook) {
             mIsPhoneOffhook = isOffhook;
+            mIsPhoneOutgoing = isOutgoing;
 
             mOrientation = AccelerometerListener.ORIENTATION_UNKNOWN;
             mAccelerometerListener.enable(mIsPhoneOffhook);
 
+            updateProxSpeaker();
+            updateProximitySensorMode();
+        } else if (isOutgoing != mIsPhoneOutgoing) {
+            mIsPhoneOutgoing = isOutgoing;
             updateProxSpeaker();
             updateProximitySensorMode();
         }
@@ -313,7 +320,13 @@ public class ProximitySensor implements AccelerometerListener.OrientationListene
                 && audioMode != AudioMode.WIRED_HEADSET
                 && audioMode != AudioMode.BLUETOOTH) {
             if (speaker && audioMode != AudioMode.SPEAKER) {
-                CallCommandClient.getInstance().setAudioMode(AudioMode.SPEAKER);
+                if (Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.PROXIMITY_AUTO_SPEAKER_INCALL_ONLY, 0) == 0
+                        || (Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.PROXIMITY_AUTO_SPEAKER_INCALL_ONLY, 0) == 1
+                        && !mIsPhoneOutgoing)) {
+                    CallCommandClient.getInstance().setAudioMode(AudioMode.SPEAKER);
+                }
             } else if (!speaker) {
                 CallCommandClient.getInstance().setAudioMode(AudioMode.EARPIECE);
                 updateProximitySensorMode();
