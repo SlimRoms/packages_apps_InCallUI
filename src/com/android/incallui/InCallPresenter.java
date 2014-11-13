@@ -811,7 +811,7 @@ public class InCallPresenter implements CallList.Listener, InCallPhoneListener {
             if (call.getAccountHandle() == null && !call.isConferenceCall()) {
                 setDisconnectCauseForMissingAccounts(call);
             }
-            mInCallActivity.maybeShowErrorDialogOnDisconnect(call.getDisconnectCause());
+            mInCallActivity.maybeShowErrorDialogOnDisconnect(call);
         }
     }
 
