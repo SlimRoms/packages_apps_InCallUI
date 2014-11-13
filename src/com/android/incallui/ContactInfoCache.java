@@ -170,14 +170,17 @@ public class ContactInfoCache implements ContactsAsyncHelper.OnImageLoadComplete
         sendInfoNotifications(callId, cacheEntry);
 
         if (didLocalLookup) {
+
             // Before issuing a request for more data from other services, We only check that the
             // contact wasn't found in the local DB.  We don't check the if the cache entry already
             // has a name because we allow overriding cnap data with data from other services.
-            if (!callerInfo.contactExists && mPhoneNumberService != null) {
+            if (!callerInfo.contactExists && cacheEntry.name == null) {
                 Log.d(TAG, "Contact lookup. Local contacts miss, checking remote");
-                final PhoneNumberServiceListener listener = new PhoneNumberServiceListener(callId);
-                mPhoneNumberService.getPhoneNumberInfo(cacheEntry.number, listener, listener,
-                        isIncoming);
+                if (mPhoneNumberService != null) {
+                    final PhoneNumberServiceListener listener = new PhoneNumberServiceListener(callId);
+                    mPhoneNumberService.getPhoneNumberInfo(cacheEntry.number, listener, listener,
+                            isIncoming);
+                }
             } else if (cacheEntry.displayPhotoUri != null) {
                 Log.d(TAG, "Contact lookup. Local contact found, starting image load");
                 // Load the image with a callback to update the image state.
