@@ -19,4 +19,6 @@
   <string name="incall_call_type_label_forwarded">Προωθημένη κλήση</string>
   <string name="card_title_dialing_waiting">Κλήση (αναμονή\u2026)</string>
   <string name="card_title_waiting_call">Κλήση σε αναμονή</string>
+  <string name="description_target_speaker">Απάντηση στο ηχείο</string>
+  <string name="description_direction_down">Ολίσθηση κάτω για <xliff:g id="target_description" example="Unlock"> %s </xliff:g>.</string>
 </resources>
