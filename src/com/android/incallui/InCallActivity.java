@@ -59,8 +59,6 @@ import com.android.phone.common.animation.AnimationListenerAdapter;
 import com.android.contacts.common.interactions.TouchPointManager;
 import com.android.contacts.common.util.MaterialColorMapUtils;
 import com.android.contacts.common.util.MaterialColorMapUtils.MaterialPalette;
-import com.android.contacts.common.widget.SelectPhoneAccountDialogFragment;
-import com.android.contacts.common.widget.SelectPhoneAccountDialogFragment.SelectPhoneAccountListener;
 import com.android.incallui.Call.State;
 
 import java.util.ArrayList;
