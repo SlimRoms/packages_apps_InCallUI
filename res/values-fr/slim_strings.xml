@@ -16,9 +16,9 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="incall_call_type_label_forwarded">Weitergeleiteter Anruf</string>
-  <string name="card_title_dialing_waiting">Rufaufbau (klopft an\u2026)</string>
-  <string name="card_title_waiting_call">Gehaltener Anruf</string>
-  <string name="description_target_speaker">Anrufannahme mit Lautsprecher</string>
-  <string name="description_direction_down">Zum <xliff:g id="target_description" example="Entsperren"> %s </xliff:g> nach unten wischen.</string>
+  <string name="incall_call_type_label_forwarded">Appel transféré</string>
+  <string name="card_title_dialing_waiting">Composition (patientez\u2026)</string>
+  <string name="card_title_waiting_call">Appel en attente</string>
+  <string name="description_target_speaker">Répondre avec le haut-parleur</string>
+  <string name="description_direction_down">Glisser vers le bas pour <xliff:g id="target_description" example="Unlock"> %s </xliff:g>.</string>
 </resources>
