@@ -66,7 +66,34 @@ public class ProximitySensor implements AccelerometerListener.OrientationListene
     private final Runnable mActivateSpeaker = new Runnable() {
         @Override
         public void run() {
-            TelecomAdapter.getInstance().setAudioRoute(AudioMode.SPEAKER);
+            final int audioMode = mAudioModeProvider.getAudioMode();
+            final boolean proxSpeakerIncallOnlyPref =
+                    (Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.PROXIMITY_AUTO_SPEAKER_INCALL_ONLY, 0) == 1);
+
+            // if phone off hook (call in session)
+            if (mIsPhoneOffhook
+                    // as long as AudioMode isn't currently wired headset or bluetooth
+                    && audioMode != AudioMode.WIRED_HEADSET
+                    && audioMode != AudioMode.BLUETOOTH) {
+
+                // okay, we're good to start switching audio mode on proximity
+
+                // if proximity sensor determines audio mode should be speaker,
+                // but it currently isn't
+                if (mIsProxSensorFar && audioMode != AudioMode.SPEAKER) {
+                    // if prox incall only is off, we set to speaker as long as phone
+                    // is off hook, ignoring whether or not the call state is outgoing
+                    if (!proxSpeakerIncallOnlyPref
+                            // or if prox incall only is on, we have to check the call
+                            // state to decide if AudioMode should be speaker
+                            || (proxSpeakerIncallOnlyPref && !mHasOutgoingCall)) {
+                        TelecomAdapter.getInstance().setAudioRoute(AudioMode.SPEAKER);
+                    }
+                } else if (!mIsProxSensorFar) {
+                    TelecomAdapter.getInstance().setAudioRoute(AudioMode.EARPIECE);
+                }
+            }
         }
     };
 
@@ -303,36 +330,15 @@ public class ProximitySensor implements AccelerometerListener.OrientationListene
         // remove any pending audio changes scheduled
         mHandler.removeCallbacks(mActivateSpeaker);
 
-        final int audioMode = mAudioModeProvider.getAudioMode();
-        final boolean proxSpeakerIncallOnlyPref =
+        final boolean proxAutoSpeaker =
                 (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.PROXIMITY_AUTO_SPEAKER_INCALL_ONLY, 0) == 1);
+                Settings.System.PROXIMITY_AUTO_SPEAKER, 0) == 1);
         mProxSpeakerDelay = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.PROXIMITY_AUTO_SPEAKER_DELAY, 100);
 
             // if phone off hook (call in session), and prox speaker feature is on
-            if (mIsPhoneOffhook && Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.PROXIMITY_AUTO_SPEAKER, 0) == 1
-                    // as long as AudioMode isn't currently wired headset or bluetooth
-                    && audioMode != AudioMode.WIRED_HEADSET
-                    && audioMode != AudioMode.BLUETOOTH) {
-
-                // okay, we're good to start switching audio mode on proximity
-
-                // if proximity sensor determines audio mode should be speaker,
-                // but it currently isn't
-                if (speaker && audioMode != AudioMode.SPEAKER) {
-                    // if prox incall only is off, we set to speaker as long as phone
-                    // is off hook, ignoring whether or not the call state is outgoing
-                    if (!proxSpeakerIncallOnlyPref
-                            // or if prox incall only is on, we have to check the call
-                            // state to decide if AudioMode should be speaker
-                            || (proxSpeakerIncallOnlyPref && !mHasOutgoingCall)) {
-                        mHandler.postDelayed(mActivateSpeaker, mProxSpeakerDelay);
-                    }
-                } else if (!speaker) {
-                    TelecomAdapter.getInstance().setAudioRoute(AudioMode.EARPIECE);
-                }
+            if (mIsPhoneOffhook && proxAutoSpeaker) {
+                    mHandler.postDelayed(mActivateSpeaker, mProxSpeakerDelay);
             }
     }
 }
