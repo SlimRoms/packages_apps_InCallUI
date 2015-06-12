@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7a288981_e8ca8f6d",
+        "filename": "res/values/slim_strings.xml",
+        "patchSetId": 6
+      },
+      "lineNbr": 3,
+      "author": {
+        "id": 1000043
+      },
+      "writtenOn": "2015-06-12T21:15:35Z",
+      "side": 1,
+      "message": "SlimRoms not aosp",
+      "range": {
+        "startLine": 3,
+        "startChar": 3,
+        "endLine": 3,
+        "endChar": 54
+      },
+      "revId": "c0581eebfbbba51d909939c3dacbebb8a0151afd",
+      "serverId": "f8201d64-d729-4630-b91d-5f8be02869f0",
+      "unresolved": false
+    }
+  ]
+}
