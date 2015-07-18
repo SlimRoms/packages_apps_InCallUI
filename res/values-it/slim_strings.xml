@@ -12,10 +12,11 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
-  <string name="onscreenBlacklistText">Feketelista</string>
-  <string name="blacklist_dialog_title">Hozzáadás a feketelistához</string>
-  <string name="blacklist_dialog_message">A jövőben<xliff:g id="number">%s</xliff:g> hívásai blokkolva lesznek</string>
-  <string name="menu_start_record">Hívás rögzítése</string>
-  <string name="menu_stop_record">Felvétel leállítása</string>
-  <string name="recording_time_text">Felvétel</string>
+  <string name="onscreenBlacklistText">Blacklist</string>
+  <string name="blacklist_dialog_title">Aggiungi alla Blacklist</string>
+  <string name="blacklist_dialog_message">Le prossime chiamate provenienti dal <xliff:g id="number">%s</xliff:g> saranno bloccate</string>
+  <string name="onscreenMoreMenuText">Avanzate</string>
+  <string name="menu_start_record">Registra chiamata</string>
+  <string name="menu_stop_record">Interrompi la registrazione</string>
+  <string name="recording_time_text">Registrazione in corso</string>
 </resources>
