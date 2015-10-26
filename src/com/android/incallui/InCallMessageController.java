@@ -143,7 +143,7 @@ public class InCallMessageController implements InCallSubstateListener, VideoEve
         }
 
         if (!callSubstateChangedText.isEmpty()) {
-            String callSubstateLabelText = call.getId() + mContext.getResources().getString(
+            String callSubstateLabelText = mContext.getResources().getString(
                     R.string.call_substate_label);
             QtiCallUtils.displayToast(mContext, callSubstateLabelText + callSubstateChangedText);
         }
@@ -164,9 +164,8 @@ public class InCallMessageController implements InCallSubstateListener, VideoEve
         }
 
         final Resources resources = mContext.getResources();
-        final String videoQualityChangedText = call.getId() +
-            resources.getString(R.string.video_quality_changed) +
-            resources.getString(QtiCallUtils.getVideoQualityResourceId(videoQuality));
+        final String videoQualityChangedText = resources.getString(R.string.video_quality_changed)
+                + resources.getString(QtiCallUtils.getVideoQualityResourceId(videoQuality));
         QtiCallUtils.displayToast(mContext, videoQualityChangedText);
     }
 
