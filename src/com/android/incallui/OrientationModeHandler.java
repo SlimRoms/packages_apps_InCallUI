@@ -144,4 +144,12 @@ public class OrientationModeHandler implements InCallDetailsListener {
             return ActivityInfo.SCREEN_ORIENTATION_NOSENSOR;
         }
     }
+
+    /**
+     * Returns the current orientation mode.
+     * @see #getOrientation(Call)
+     */
+    public int getCurrentOrientationMode() {
+        return mOrientationMode;
+    }
 }
