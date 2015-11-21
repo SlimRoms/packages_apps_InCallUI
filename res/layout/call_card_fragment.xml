@@ -56,7 +56,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone"
             android:padding="@dimen/call_banner_side_padding"
-            android:background="@android:color/white" />
+            android:background="@color/background_white" />
 
     </LinearLayout>
 
@@ -75,7 +75,7 @@
             android:gravity="top|center_horizontal"
             android:scaleType="centerCrop"
             android:importantForAccessibility="no"
-            android:background="@android:color/white"
+            android:background="@color/background_white"
             android:src="@drawable/img_no_image_automirrored" />
 
     </FrameLayout>
