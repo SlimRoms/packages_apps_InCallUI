@@ -273,6 +273,11 @@ public class CallerInfoAsyncQuery {
                                     + mCallerInfo);
                         }
 
+                       // If caller info name not found in contacts callerInfoContactSearch
+                       // is true to continue search for fdn or sdn
+                        if (TextUtils.isEmpty(mCallerInfo.name))
+                            mCallerInfo.callerInfoContactSearch = true;
+
                         // Final step: look up the geocoded description.
                         if (ENABLE_UNKNOWN_NUMBER_GEO_DESCRIPTION) {
                             // Note we do this only if we *don't* have a valid name (i.e. if
