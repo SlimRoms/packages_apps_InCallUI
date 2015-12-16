@@ -253,7 +253,9 @@ public class AnswerPresenter extends Presenter<AnswerPresenter.AnswerUi>
     public void onDisconnect(Call call) {
         int subId = call.getSubId();
         int phoneId = mCalls.getPhoneId(subId);
-        mCall[phoneId] = null;
+        if (call.equals(mCall[phoneId])) {
+            mCall[phoneId] = null;
+        }
     }
 
     public void onSessionModificationStateChange(int sessionModificationState) {
@@ -308,7 +310,7 @@ public class AnswerPresenter extends Presenter<AnswerPresenter.AnswerUi>
         int phoneId = mCalls.getPhoneId(subId);
         mCallId[phoneId] = call.getId();
         mCall[phoneId] = call;
-
+        mCalls.addListener(this);
         // Listen for call updates for the current call.
         mCalls.addCallUpdateListener(mCallId[phoneId], this);
 
