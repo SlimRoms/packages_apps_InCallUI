@@ -67,7 +67,6 @@ import java.util.Objects;
 public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi> implements
         IncomingCallListener, InCallOrientationListener, InCallStateListener,
         InCallDetailsListener, SurfaceChangeListener, VideoEventListener,
-        InCallVideoCallCallbackNotifier.SessionModificationListener,
         InCallPresenter.InCallEventListener, InCallUiStateNotifierListener {
     public static final String TAG = "VideoCallPresenter";
 
@@ -243,7 +242,6 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
         // Register for surface and video events from {@link InCallVideoCallListener}s.
         InCallVideoCallCallbackNotifier.getInstance().addSurfaceChangeListener(this);
         InCallVideoCallCallbackNotifier.getInstance().addVideoEventListener(this);
-        InCallVideoCallCallbackNotifier.getInstance().addSessionModificationListener(this);
         InCallUiStateNotifier.getInstance().addListener(this);
         mCurrentVideoState = VideoProfile.STATE_AUDIO_ONLY;
         mCurrentCallState = Call.State.INVALID;
@@ -271,7 +269,6 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
 
         InCallVideoCallCallbackNotifier.getInstance().removeSurfaceChangeListener(this);
         InCallVideoCallCallbackNotifier.getInstance().removeVideoEventListener(this);
-        InCallVideoCallCallbackNotifier.getInstance().removeSessionModificationListener(this);
         InCallUiStateNotifier.getInstance().removeListener(this);
     }
 
@@ -1090,51 +1087,6 @@ public class VideoCallPresenter extends Presenter<VideoCallPresenter.VideoCallUi
         changePreviewDimensions(previewDimensions.x, previewDimensions.y);
 
         ui.setPreviewRotation(mDeviceOrientation);
-    }
-
-    @Override
-    public void onUpgradeToVideoRequest(Call call, int videoState) {
-        Log.d(this, "onUpgradeToVideoRequest call = " + call + " new video state = " + videoState);
-        if (mPrimaryCall == null || !Call.areSame(mPrimaryCall, call)) {
-            Log.w(this, "UpgradeToVideoRequest received for non-primary call");
-        }
-
-        if (call == null) {
-            return;
-        }
-
-        call.setSessionModificationTo(videoState);
-    }
-
-    @Override
-    public void onUpgradeToVideoSuccess(Call call) {
-        Log.d(this, "onUpgradeToVideoSuccess call=" + call);
-        if (mPrimaryCall == null || !Call.areSame(mPrimaryCall, call)) {
-            Log.w(this, "UpgradeToVideoSuccess received for non-primary call");
-        }
-
-        if (call == null) {
-            return;
-        }
-    }
-
-    @Override
-    public void onUpgradeToVideoFail(int status, Call call) {
-        Log.d(this, "onUpgradeToVideoFail call=" + call);
-        if (mPrimaryCall == null || !Call.areSame(mPrimaryCall, call)) {
-            Log.w(this, "UpgradeToVideoFail received for non-primary call");
-        }
-
-        if (call == null) {
-            return;
-        }
-    }
-
-    @Override
-    public void onDowngradeToAudio(Call call) {
-        call.setSessionModificationState(Call.SessionModificationState.NO_REQUEST);
-        // exit video mode
-        exitVideoMode();
     }
 
     /**
