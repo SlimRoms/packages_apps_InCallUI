@@ -21,9 +21,11 @@ import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
 import android.content.Context;
+import android.content.res.ColorStateList;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Trace;
 import android.os.Handler;
@@ -715,6 +717,17 @@ public class CallCardFragment extends BaseFragment<CallCardPresenter, CallCardPr
             // needed because the pulse animation operates on the view alpha.
             mCallStateIcon.setAlpha(1.0f);
             mCallStateIcon.setImageDrawable(callStateIcon);
+
+            MaterialPalette themeColors = InCallPresenter.getInstance().getThemeColors();
+            if (themeColors != null) {
+                // Change the alpha value in the 32 bit color of sim card, because the color of
+                // call background changed with the color of sim card.
+                // Set the tint mode to SCREEN to avoid the slot number in the sim icon be covered.
+                int stateIconColor = (themeColors.mPrimaryColor & 0x00ffffff) | 0x7f000000;
+                mCallStateIcon.setImageTintMode(PorterDuff.Mode.SCREEN);
+                mCallStateIcon.setImageTintList(ColorStateList.valueOf(stateIconColor));
+                Log.d(this, "Need to set tint of call state icon to " + stateIconColor);
+            }
 
             if (state == Call.State.ACTIVE || state == Call.State.CONFERENCED
                     || TextUtils.isEmpty(callStateLabel.getCallStateLabel())) {
