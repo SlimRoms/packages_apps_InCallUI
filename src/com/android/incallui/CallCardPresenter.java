@@ -808,7 +808,8 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
     private Drawable getCallProviderIcon(Call call) {
         PhoneAccount account = getAccountForCall(call);
         TelecomManager mgr = InCallPresenter.getInstance().getTelecomManager();
-        if (account != null && mgr.getCallCapablePhoneAccounts().size() > 1) {
+        if (account != null && account.getIcon()!= null &&
+                mgr.getCallCapablePhoneAccounts().size() > 1) {
             return account.getIcon().loadDrawable(mContext);
         }
         return null;
