@@ -61,7 +61,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * TODO: This class has become more of a state machine at this point.  Consider renaming.
  */
 public class InCallPresenter implements CallList.Listener,
-        CircularRevealFragment.OnCircularRevealCompleteListener {
+        CircularRevealFragment.OnCircularRevealCompleteListener,
+        InCallVideoCallCallbackNotifier.SessionModificationListener {
 
     private static final String EXTRA_FIRST_TIME_SHOWN =
             "com.android.incallui.intent.extra.FIRST_TIME_SHOWN";
@@ -251,6 +252,7 @@ public class InCallPresenter implements CallList.Listener,
         addDetailsListener(CallSubstateNotifier.getInstance());
         InCallZoomController.getInstance().setUp(mContext);
         addDetailsListener(SessionModificationCauseNotifier.getInstance());
+        InCallVideoCallCallbackNotifier.getInstance().addSessionModificationListener(this);
 
         Log.d(this, "Finished InCallPresenter.setUp");
     }
@@ -275,6 +277,7 @@ public class InCallPresenter implements CallList.Listener,
         removeDetailsListener(CallSubstateNotifier.getInstance());
         InCallZoomController.getInstance().tearDown();
         removeDetailsListener(SessionModificationCauseNotifier.getInstance());
+        InCallVideoCallCallbackNotifier.getInstance().removeSessionModificationListener(this);
     }
 
     private void attemptFinishActivity() {
@@ -526,6 +529,32 @@ public class InCallPresenter implements CallList.Listener,
         }
 
         wakeUpScreen();
+    }
+
+    @Override
+    public void onUpgradeToVideoRequest(Call call, int videoState) {
+        Log.d(this, "onUpgradeToVideoRequest call = " + call + " video state = " + videoState);
+
+        if (call == null) {
+            return;
+        }
+
+        call.setSessionModificationTo(videoState);
+    }
+
+    @Override
+    public void onUpgradeToVideoSuccess(Call call) {
+        //NO-OP
+    }
+
+    @Override
+    public void onUpgradeToVideoFail(int status, Call call) {
+        //NO-OP
+    }
+
+    @Override
+    public void onDowngradeToAudio(Call call) {
+        //NO-OP
     }
 
     /**
@@ -793,6 +822,14 @@ public class InCallPresenter implements CallList.Listener,
             call.getVideoCall().sendSessionModifyResponse(videoProfile);
             call.setSessionModificationState(Call.SessionModificationState.NO_REQUEST);
         }
+    }
+
+    /*package*/
+    void declineUpgradeRequest() {
+        // Pass mContext if InCallActivity is destroyed.
+        // Ex: When user pressed back key while in active call and
+        // then modify request is received followed by MT call.
+        declineUpgradeRequest(mInCallActivity != null ? mInCallActivity : mContext);
     }
 
     /**

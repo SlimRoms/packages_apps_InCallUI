@@ -208,6 +208,23 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
         } else if (newState == InCallState.INCALL) {
             primary = getCallToDisplay(callList, null, false);
             secondary = getCallToDisplay(callList, primary, true);
+            // During swap scenarios, two calls can be ACTIVE at the same time momentarily.
+            // In such cases secondary above will be null. To avoid flickering of secondary
+            // call view, assign the non primary call as secondary here.
+            if (secondary == null && primary != null) {
+                Call probableSecondary = null;
+                if (primary == mPrimary) {
+                    probableSecondary = mSecondary;
+                } else if (primary == mSecondary) {
+                    probableSecondary = mPrimary;
+                }
+                if (probableSecondary != null &&
+                        probableSecondary.getState() == Call.State.ACTIVE &&
+                        primary.getSubId() == probableSecondary.getSubId()) {
+                    Log.v(this, "Two calls ACTIVE");
+                    secondary = probableSecondary;
+                }
+            }
         }
 
         Log.d(this, "Primary call: " + primary);
@@ -246,7 +263,7 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
                     mPrimary.getState() == Call.State.INCOMING);
             updatePrimaryDisplayInfo();
             maybeStartSearch(mPrimary, true);
-            mPrimary.setSessionModificationState(Call.SessionModificationState.NO_REQUEST);
+            maybeClearSessionModificationState(mPrimary);
         }
 
         if (previousPrimary != null && mPrimary == null) {
@@ -266,7 +283,7 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
                     mSecondary.getState() == Call.State.INCOMING);
             updateSecondaryDisplayInfo();
             maybeStartSearch(mSecondary, false);
-            mSecondary.setSessionModificationState(Call.SessionModificationState.NO_REQUEST);
+            maybeClearSessionModificationState(mSecondary);
         }
 
         // Start/stop timers.
@@ -526,6 +543,13 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
         }
     }
 
+    private void maybeClearSessionModificationState(Call call) {
+        if (call.getSessionModificationState() !=
+                Call.SessionModificationState.RECEIVED_UPGRADE_TO_VIDEO_REQUEST) {
+            call.setSessionModificationState(Call.SessionModificationState.NO_REQUEST);
+        }
+    }
+
     /**
      * Starts a query for more contact data for the save primary and secondary calls.
      */
@@ -779,6 +803,20 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
     }
 
     /**
+     * Return the icon to represent the call provider
+     */
+    private Drawable getCallProviderIcon(Call call) {
+        PhoneAccount account = getAccountForCall(call);
+        TelecomManager mgr = InCallPresenter.getInstance().getTelecomManager();
+        if (account != null && account.getIcon()!= null &&
+                mgr.getCallCapablePhoneAccounts().size() > 1) {
+            return account.getIcon().loadDrawable(mContext);
+        }
+        return null;
+    }
+
+
+    /**
      * Returns the label (line of text above the number/name) for any given call.
      * For example, "calling via [Account/Google Voice]" for outgoing calls.
      */
@@ -813,7 +851,7 @@ public class CallCardPresenter extends Presenter<CallCardPresenter.CallCardUi>
             }
         }
 
-        return null;
+        return getCallProviderIcon(mPrimary);
     }
 
     private boolean hasOutgoingGatewayCall() {
