@@ -13,12 +13,6 @@
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
   <!-- Text for the onscreen "Blacklist" button -->
-  <string name="onscreenBlacklistText">Sperrliste</string>
   <!-- Blacklist confirmation dialog -->
-  <string name="blacklist_dialog_title">Zur Sperrliste hinzufügen</string>
-  <string name="blacklist_dialog_message">Zukünftige Anrufe von <xliff:g id="number">%s</xliff:g> werden abgewiesen</string>
   <!-- Incall Overflow Menu -->
-  <string name="menu_start_record">Anruf aufzeichnen</string>
-  <string name="menu_stop_record">Aufzeichnung stoppen</string>
-  <string name="recording_time_text">Aufzeichnung</string>
 </resources>

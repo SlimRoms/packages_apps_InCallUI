@@ -12,9 +12,12 @@
      limitations under the License.
 -->
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+  <!-- Text for the onscreen "Blacklist" button -->
   <string name="onscreenBlacklistText">Μαύρη Λίστα</string>
+  <!-- Blacklist confirmation dialog -->
   <string name="blacklist_dialog_title">Προσθήκη στη μαύρη λίστα</string>
   <string name="blacklist_dialog_message">Μελλοντικές κλήσεις από το <xliff:g id="number">%s</xliff:g> θα απορρίπτονται</string>
+  <!-- Incall Overflow Menu -->
   <string name="onscreenMoreMenuText">Μενού \"περισσότερα\"</string>
   <string name="menu_start_record">Ηχογράφηση κλήσης</string>
   <string name="menu_stop_record">Τέλος ηχογράφησης</string>
